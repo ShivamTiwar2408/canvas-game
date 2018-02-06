@@ -2,6 +2,12 @@
   "name": "canvas",
   "description": "game",
   "version": "0.0.1",
+  "scripts": {
+    "start": "harp server --port $PORT"
+  },
+  "dependencies": {
+    "harp": "*"
+  }
   "engines": {
     "npm": "5.6.x"
   }
