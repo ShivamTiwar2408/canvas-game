@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "harp": "*"
-  }
+  },
   "engines": {
     "npm": "5.6.x"
   }
