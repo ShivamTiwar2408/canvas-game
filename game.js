@@ -1,20 +1,26 @@
 margin = 10;
-cnvsheight = 700;
-cnvswidth = 800;
+cnvsheight = 500;
+cnvswidth = 600;
 boxSide= 20;
-velocity = 0.5;
+velocity = 1;
+obstacleSize = 25;
+obstaclevelocity = 0.7;
 foodRadius = 6;
 score = 0;
 level = 0;
 paused = false;
+fps = 60;
 
 g = document.getElementById("game");
 g.setAttribute("width" , cnvswidth);
 g.setAttribute("height" , cnvsheight);
 cntx = g.getContext("2d");
 i = document.getElementById("pause");
+
 b = new box(cnvswidth/2 , cnvsheight/2 , boxSide , 0 , 0 , cnvswidth ,  cnvsheight);
 f = new food( cnvswidth ,  cnvsheight , foodRadius);
+obstacles = [];
+obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 
 keyHandlers  = {
     "ArrowRight" : function() { b.velocityX = velocity ; b.velocityY = 0 }, 
@@ -27,7 +33,7 @@ keyHandlers  = {
 
 
 function food(limitX , limitY , radius){
-    this.colors = ["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
+    this.colors = ["white" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.radius =  radius;
     this.positionY = margin +  Math.ceil(Math.random() * (limitY - 3 * margin));
     this.positionX = margin + Math.ceil(Math.random() * (limitX - 3 * margin));
@@ -60,29 +66,42 @@ function box(positionX , positionY , dimension , velocityX , velocityY, limitX ,
         this.velocityX = 0;
         this.velocityY = 0;
     }
+    this.onCollision = this.reset;
     this.move = function(){
         if (paused) return;
 
-        if (this.positionX >  (this.limitX - dimension) 
-                || this.positionY >  (this.limitY - dimension) 
-                || this.positionX < 0 
-                || this.positionY < 0
-            ){
-            this.reset();
+        if (this.positionX >  (this.limitX - (margin + dimension)) 
+        || this.positionY >  (this.limitY - (margin + dimension)) 
+        || this.positionX < margin 
+        || this.positionY < margin
+         ){
+            this.onCollision();
         }
 
         this.positionX = this.positionX + this.velocityX;
         this.positionY = this.positionY + this.velocityY;
     }
+    this.color = "white";
     this.render = function (cntx) {
         this.move();
-        cntx.fillStyle="white";
+        cntx.fillStyle= this.color ;
         cntx.fillRect(this.positionX , this.positionY , this.dimension , this.dimension);
     }
 }
 
-function obstacle (){
+function obstacle(dimension , velocity , limitX , limitY){
+    var positionY = limitY/5 +  Math.ceil(Math.random() * (4 * (limitY /5)));
+    var positionX = limitX/5 +  Math.ceil(Math.random() * (4 * (limitX /5)));  
+    var velocityX =  Math.random() > 0.5 ? velocity : 0;
+    var velocityY =  velocityX == velocity ? 0 : velocity;
 
+    box.call(this , positionX , positionY , dimension , velocityX , velocityY, limitX , limitY);
+
+    this.onCollision = function(){
+        this.velocityX = -(this.velocityX);
+        this.velocityY = -(this.velocityY);
+    }
+    this.color = "green";
 }
 
 
@@ -103,21 +122,25 @@ function setScore(){
 }
 
 function increaseDifficulty(){
-    level++;
+   //level++;
     velocity = 1.5 * velocity;
+    obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 }
 
 function draw(){
-    cntx.fillStyle = "blue";
+    cntx.fillStyle = "black";
     cntx.fillRect(0, 0, cnvswidth , cnvsheight);
     cntx.fillStyle = "black";
-    cntx.fillRect(margin, margin, cnvswidth - 2 * margin, cnvsheight - 2 * margin);
+    cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
     if (paused){
-        cntx.drawImage(i,  cnvswidth/6 , cnvsheight/3);
+        cntx.drawImage(i,  cnvswidth/10 , cnvsheight/3);
         return;
     }
     b.render(cntx);
-    f.render(cntx);  
+    f.render(cntx);
+    obstacles.forEach(o => {
+        o.render(cntx);  
+    });
     if ( colision_detection (b , f) ){
         f = new food( cnvswidth ,  cnvsheight , foodRadius);
         score++;
@@ -143,5 +166,5 @@ window.onload =  function(){
     setScore();
     setInterval(function(){
        draw();
-    } , 5)
+    } , 1000/fps)
 }
