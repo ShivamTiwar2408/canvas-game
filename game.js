@@ -33,7 +33,7 @@ keyHandlers  = {
 
 
 function food(limitX , limitY , radius){
-    this.colors = ["white" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
+    this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.radius =  radius;
     this.positionY = margin +  Math.ceil(Math.random() * (limitY - 3 * margin));
     this.positionX = margin + Math.ceil(Math.random() * (limitX - 3 * margin));
