@@ -11,7 +11,7 @@ var level = 0;
 var paused = false;
 var gameOver = false;
 var fps = 60;
-var life = 100;
+var damage = 0;
 var numberOfLifes = 4;
 var  b , obstacles = [] , f;
 
@@ -167,11 +167,30 @@ function setGameOver(){
 }
 
 function reduceLife(){
-    life = life - (100 / numberOfLifes);
-    if (life === 0){
+    damage = damage +  (100 / numberOfLifes);
+    if (damage === 100){
         setGameOver();
     }
-    rl.style.width = life + "%";
+    rl.style.width = damage + "%";
+}
+
+function writeGameOverMessage(){
+    cntx.fillStyle = "white";
+    cntx.font = "bold 80px Neue Swift";
+    cntx.fillText("Game",  cnvswidth/3 , cnvsheight/3);
+    cntx.fillText("Over",  cnvswidth/3 , cnvsheight/3 + 80);
+    cntx.font = "bold 20px Arial";
+    cntx.fillText("Press F5 to play again",  cnvswidth/3 , cnvsheight/3 + 160);
+    //cntx.drawImage(gameoverImg,  cnvswidth/10 , cnvsheight/10);
+}
+
+function writePausedMessage(){
+    cntx.fillStyle = "white";
+    cntx.font = "bold 80px Neue Swift";
+    cntx.fillText("Paused",cnvswidth/4 , cnvsheight/2.5);
+    cntx.font = "bold 20px Arial";
+    cntx.fillText("Press Space Bar to resume", cnvswidth/4 , cnvsheight/2.5 + 80);
+    //cntx.drawImage(pauseImg,  cnvswidth/10 , cnvsheight/3);
 }
 
 function draw(){
@@ -181,11 +200,11 @@ function draw(){
    // cntx.fillStyle = "black";
     //cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
     if (gameOver){
-        cntx.drawImage(gameoverImg,  cnvswidth/10 , cnvsheight/10);
+        writeGameOverMessage();
         return;
     }
     if (paused){
-        cntx.drawImage(pauseImg,  cnvswidth/10 , cnvsheight/3);
+        writePausedMessage();
         return;
     }
     if (b) { b.render(cntx); }
