@@ -7,7 +7,6 @@ var obstacleSize = 25;
 var obstaclevelocity = 0.7;
 var foodRadius = 6;
 var score = 0;
-var level = 0;
 var paused = false;
 var gameOver = false;
 var fps = 60;
@@ -153,7 +152,6 @@ function setScore(value){
 }
 
 function increaseDifficulty(){
-   //level++;
     velocity = 1.2 * velocity;
     obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 }
