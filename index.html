@@ -1,0 +1,30 @@
+<div>
+        <div style="margin-right: 33%;margin-left: 20%;margin-bottom: 3px;">
+             <span style="font-size: 1.5em; font-weight: bold;">Score : <span id="score"></span></span>
+             <span style="padding: 6%; font-size: 1.5em; font-weight: bold;">Hi : <span id="highest"></span></span>
+             <!-- <span style="margin: 0px 10%;font-size: 1.5em;font-weight: bold;">Level : <span id="level"></span></span> -->
+             <span style="float: right;">
+                 <div id="max" style="background-color : black; width: 200px; height : 30px">
+                     <div id="remainingLife" style="background-color : red; width : 100%; height : 100%"></div>
+                 </div>
+            </span>
+        </div>
+         <div>
+             <canvas id="game" style="margin: 0 20%;background-color:black"></canvas>
+         </div>
+         <div style="display : none">
+              <img id="pause" src="paused.jpg" alt="Paused">
+              <img id="gameover" src="Game_Over.jpg" alt="GameOver"> 
+              <img id="background" src="bg1.jpg" alt="GameOver"> 
+              <img id="obstacle" src="obstacle.jpg" alt="GameOver">               
+        </div>
+</div>
+<script type="application/javascript">
+    function loadJS(file) {
+        var jsElm = document.createElement("script");
+        jsElm.type = "application/javascript";
+        jsElm.src = file;
+        document.body.appendChild(jsElm);
+    }
+    loadJS("box.js");
+</script>

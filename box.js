@@ -1,28 +1,50 @@
-margin = 0; // 10;
-cnvsheight = 500;
-cnvswidth = 600;
-boxSide= 20;
-velocity = 1;
-obstacleSize = 25;
-obstaclevelocity = 0.7;
-foodRadius = 6;
-score = 0;
-level = 0;
-paused = false;
-fps = 60;
+var margin = 0; // 10;
+var cnvsheight = 500;
+var cnvswidth = 600;
+var boxSide= 20;
+var velocity = 1;
+var obstacleSize = 25;
+var obstaclevelocity = 0.7;
+var foodRadius = 6;
+var score = 0;
+var level = 0;
+var paused = false;
+var gameOver = false;
+var fps = 60;
+var life = 100;
+var numberOfLifes = 4;
+var  b , obstacles = [] , f;
 
-g = document.getElementById("game");
+function empty(){
+    obstacles = [];
+    b = undefined;
+    f = undefined;
+}
+
+var g = document.getElementById("game");
 g.setAttribute("width" , cnvswidth);
 g.setAttribute("height" , cnvsheight);
 cntx = g.getContext("2d");
-i = document.getElementById("pause");
+var pauseImg = document.getElementById("pause");
+var gameoverImg = document.getElementById("gameover");
+var bgImg = document.getElementById("background");
+var oImg = document.getElementById("obstacle");
+var rl = document.getElementById("remainingLife");
+var scoreEL = document.getElementById("score");
+var highestEL = document.getElementById("highest");
 
-b = new box(cnvswidth/2 , cnvsheight/2 , boxSide , 0 , 0 , cnvswidth ,  cnvsheight);
-f = new food( cnvswidth ,  cnvsheight , foodRadius);
-obstacles = [];
-obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
+function setHighestScore(value){
+    localStorage.setItem("highestScore", value);
+}
+function getHighestScore(){
+    var item = localStorage.getItem("highestScore");
+    if (item == null) return 0;
+    else return item;
+}
 
-keyHandlers  = {
+highestEL.innerHTML = getHighestScore();
+
+var keyHandlers  = {
     "ArrowRight" : function() { b.velocityX = velocity ; b.velocityY = 0 }, 
     "ArrowLeft" : function() { b.velocityX = -(velocity) ; b.velocityY = 0 } ,
     "ArrowUp" : function() { b.velocityX = 0 ; b.velocityY = -(velocity)  }  , 
@@ -30,13 +52,21 @@ keyHandlers  = {
     "Space" : function() { paused = !paused} 
 } 
 
+function instantiate(){
+    obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
+    b = new box(cnvswidth/2 , cnvsheight/2 , boxSide , 0 , 0 , cnvswidth ,  cnvsheight);
+    f = new food( cnvswidth ,  cnvsheight , foodRadius);
+    setScore(0);
+}
+
+instantiate();
 
 
 function food(limitX , limitY , radius){
     this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.radius =  radius;
-    this.positionY = margin +  Math.ceil(Math.random() * (limitY - 3 * margin));
-    this.positionX = margin + Math.ceil(Math.random() * (limitX - 3 * margin));
+    this.positionY = margin +  Math.ceil(Math.random() * (limitY - 2 * margin - 2*radius ));
+    this.positionX = margin + Math.ceil(Math.random() * (limitX - 2 * margin - 2*radius));
     this.flip = 0;
     this.reposition = function(cntx){
         //cntx.clearRect(this.positionX , this.positionY , 2 * this.radius ,  2 * this.radius);
@@ -65,6 +95,7 @@ function box(positionX , positionY , dimension , velocityX , velocityY, limitX ,
         this.positionX = limitX/2;
         this.velocityX = 0;
         this.velocityY = 0;
+        reduceLife();
     }
     this.onCollision = this.reset;
     this.move = function(){
@@ -90,8 +121,8 @@ function box(positionX , positionY , dimension , velocityX , velocityY, limitX ,
 }
 
 function obstacle(dimension , velocity , limitX , limitY){
-    var positionY = limitY/5 +  Math.ceil(Math.random() * (4 * (limitY /5)));
-    var positionX = limitX/5 +  Math.ceil(Math.random() * (4 * (limitX /5)));  
+    var positionY = limitY/5 +  Math.ceil(Math.random() * ( (4 * (limitY /5)) - dimension));
+    var positionX = limitX/5 +  Math.ceil(Math.random() * ( (4 * (limitX /5)) - dimension));  
     var velocityX =  Math.random() >= 0.5 ? velocity : 0;
     var velocityY =  velocityX === velocity ? 0 : velocity;
 
@@ -117,8 +148,8 @@ function colision_detection (r , c){
     )
 }
 
-function setScore(){
-    document.getElementById("score").innerText = score;
+function setScore(value){
+    scoreEL.innerText = value;
 }
 
 function increaseDifficulty(){
@@ -127,24 +158,45 @@ function increaseDifficulty(){
     obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 }
 
+function setGameOver(){
+    if (score > parseInt(getHighestScore())){
+        setHighestScore(score);
+    }
+    gameOver = true;
+    empty();
+}
+
+function reduceLife(){
+    life = life - (100 / numberOfLifes);
+    if (life === 0){
+        setGameOver();
+    }
+    rl.style.width = life + "%";
+}
+
 function draw(){
-    cntx.fillStyle = "black";
-    cntx.fillRect(0, 0, cnvswidth , cnvsheight);
-    cntx.fillStyle = "black";
-    cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
-    if (paused){
-        cntx.drawImage(i,  cnvswidth/10 , cnvsheight/3);
+    //cntx.fillStyle = "black";
+    //cntx.fillRect(0, 0, cnvswidth , cnvsheight);
+    cntx.drawImage(bgImg,  0, 0);
+   // cntx.fillStyle = "black";
+    //cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
+    if (gameOver){
+        cntx.drawImage(gameoverImg,  cnvswidth/10 , cnvsheight/10);
         return;
     }
-    b.render(cntx);
-    f.render(cntx);
+    if (paused){
+        cntx.drawImage(pauseImg,  cnvswidth/10 , cnvsheight/3);
+        return;
+    }
+    if (b) { b.render(cntx); }
+    if (f) { f.render(cntx); }
     obstacles.forEach(o => {
         o.render(cntx);  
     });
-    if ( colision_detection (b , f) ){
+    if(colision_detection(b,f)){
         f = new food( cnvswidth ,  cnvsheight , foodRadius);
         score++;
-        setScore();
+        setScore(score);
         if (score && score % 5 == 0 ) {
             increaseDifficulty();
         }
@@ -163,7 +215,6 @@ function bindKeyEvents(){
 
 window.onload =  function(){
     bindKeyEvents();
-    setScore();
     setInterval(function(){
        draw();
     } , 1000/fps)
