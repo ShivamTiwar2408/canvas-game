@@ -3,7 +3,7 @@
   "description": "game",
   "version": "0.0.1",
   "scripts": {
-    "start": "harp server box.html --port $PORT"
+    "start": "harp server --port $PORT"
   },
   "dependencies": {
     "harp": "*"
