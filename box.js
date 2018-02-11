@@ -193,12 +193,16 @@ function writePausedMessage(){
     //cntx.drawImage(pauseImg,  cnvswidth/10 , cnvsheight/3);
 }
 
-function draw(){
+function renderBackGround(){
     //cntx.fillStyle = "black";
     //cntx.fillRect(0, 0, cnvswidth , cnvsheight);
     cntx.drawImage(bgImg,  0, 0);
-   // cntx.fillStyle = "black";
+    // cntx.fillStyle = "black";
     //cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
+}
+
+function draw(){
+    renderBackGround();
     if (gameOver){
         writeGameOverMessage();
         return;
