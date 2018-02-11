@@ -130,7 +130,7 @@ function obstacle(dimension , velocity , limitX , limitY){
         this.velocityX = -(this.velocityX);
         this.velocityY = -(this.velocityY);
     }
-    this.color = "green";
+    this.color = "#045FB4";
 }
 
 
