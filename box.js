@@ -61,23 +61,18 @@ function instantiate(){
 instantiate();
 
 
-function food(limitX , limitY , radius){
+function food(limitX , limitY , dimension){
     this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
-    this.radius =  radius;
-    this.positionY =  Math.ceil(Math.random() * (limitY - 2*radius ));
-    this.positionX =  Math.ceil(Math.random() * (limitX - 2*radius));
+    this.dimension =  dimension;
+    this.positionY =  Math.ceil(Math.random() * (limitY - 2*dimension ));
+    this.positionX =  Math.ceil(Math.random() * (limitX - 2*dimension));
     this.flip = 0;
-    this.reposition = function(cntx){
-        //cntx.clearRect(this.positionX , this.positionY , 2 * this.radius ,  2 * this.radius);
-        this.positionY =  Math.ceil(Math.random() * limitY);
-        this.positionX = Math.ceil(Math.random() * limitX);
-    }
     this.render = function (cntx) {
         this.flip = (this.flip + 1) % this.colors.length;
         cntx.fillStyle = this.colors[this.flip];
-        //cntx.arc(this.positionX , this.positionY , this.radius , 0 , 2*Math.PI);
+        //cntx.arc(this.positionX , this.positionY , this.dimension , 0 , 2*Math.PI);
         //cntx.fill();
-        cntx.fillRect(this.positionX , this.positionY , 2 * this.radius , 2 * this.radius);
+        cntx.fillRect(this.positionX , this.positionY , 2 * this.dimension , 2 * this.dimension);
     }
 }
 
@@ -135,16 +130,49 @@ function obstacle(dimension , velocity , limitX , limitY){
 }
 
 
-function colision_detection (r , c){
+function colision_detection (large , small){
 
-    let cirlce_centreX = c.positionX + c.radius;
-    let cirlce_centreY = c.positionY + c.radius;
-    return (
-        cirlce_centreX >= r.positionX 
-    && cirlce_centreX <= (r.positionX + r.dimension)
-    && cirlce_centreY >= r.positionY 
-    && cirlce_centreY <= (r.positionY + r.dimension)
-    )
+    let corner1_x = small.positionX;
+    let corner1_y = small.positionY;
+    
+    if (
+        corner1_x >= large.positionX 
+    && corner1_x <= (large.positionX + large.dimension)
+    && corner1_y >= large.positionY 
+    && corner1_y <= (large.positionY + large.dimension)
+    ) return true;
+
+    let corner2_x = small.positionX + small.dimension;
+    let corner2_y = small.positionY;
+
+    if (
+        corner2_x >= large.positionX 
+    && corner2_x <= (large.positionX + large.dimension)
+    && corner2_y >= large.positionY 
+    && corner2_y <= (large.positionY + large.dimension)
+    ) return true;
+    
+    let corner3_x = small.positionX;
+    let corner3_y = small.positionY + small.dimension;
+
+    if (
+        corner3_x >= large.positionX 
+    && corner3_x <= (large.positionX + large.dimension)
+    && corner3_y >= large.positionY 
+    && corner3_y <= (large.positionY + large.dimension)
+    ) return true;
+    
+    let corner4_x = small.positionX + small.dimension;
+    let corner4_y = small.positionY + small.dimension;
+
+    if (
+        corner4_x >= large.positionX 
+    && corner4_x <= (large.positionX + large.dimension)
+    && corner4_y >= large.positionY 
+    && corner4_y <= (large.positionY + large.dimension)
+    ) return true;
+
+    return false;
 }
 
 function setScore(value){
@@ -212,7 +240,10 @@ function draw(){
     if (b) { b.render(cntx); }
     if (f) { f.render(cntx); }
     obstacles.forEach(o => {
-        o.render(cntx);  
+        o.render(cntx);
+        if ( colision_detection(o,b) ){
+            b.reset();
+        }
     });
     if(colision_detection(b,f)){
         f = new food( cnvswidth ,  cnvsheight , foodRadius);
