@@ -1,4 +1,4 @@
-margin = 10;
+margin = 0; // 10;
 cnvsheight = 500;
 cnvswidth = 600;
 boxSide= 20;
@@ -92,8 +92,8 @@ function box(positionX , positionY , dimension , velocityX , velocityY, limitX ,
 function obstacle(dimension , velocity , limitX , limitY){
     var positionY = limitY/5 +  Math.ceil(Math.random() * (4 * (limitY /5)));
     var positionX = limitX/5 +  Math.ceil(Math.random() * (4 * (limitX /5)));  
-    var velocityX =  Math.random() > 0.5 ? velocity : 0;
-    var velocityY =  velocityX == velocity ? 0 : velocity;
+    var velocityX =  Math.random() >= 0.5 ? velocity : 0;
+    var velocityY =  velocityX === velocity ? 0 : velocity;
 
     box.call(this , positionX , positionY , dimension , velocityX , velocityY, limitX , limitY);
 
@@ -123,7 +123,7 @@ function setScore(){
 
 function increaseDifficulty(){
    //level++;
-    velocity = 1.5 * velocity;
+    velocity = 1.2 * velocity;
     obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 }
 
