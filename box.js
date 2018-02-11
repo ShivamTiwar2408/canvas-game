@@ -30,6 +30,7 @@ var oImg = document.getElementById("obstacle");
 var rl = document.getElementById("remainingLife");
 var scoreEL = document.getElementById("score");
 var highestEL = document.getElementById("highest");
+document.title = "Box";
 
 function setHighestScore(value){
     localStorage.setItem("highestScore", value);
