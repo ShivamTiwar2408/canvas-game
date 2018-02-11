@@ -1,7 +1,6 @@
-var margin = 0; // 10;
 var cnvsheight = 500;
 var cnvswidth = 600;
-var boxSide= 20;
+var boxSide = 20;
 var velocity = 1;
 var obstacleSize = 25;
 var obstaclevelocity = 0.7;
@@ -64,8 +63,8 @@ instantiate();
 function food(limitX , limitY , radius){
     this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.radius =  radius;
-    this.positionY = margin +  Math.ceil(Math.random() * (limitY - 2 * margin - 2*radius ));
-    this.positionX = margin + Math.ceil(Math.random() * (limitX - 2 * margin - 2*radius));
+    this.positionY =  Math.ceil(Math.random() * (limitY - 2*radius ));
+    this.positionX =  Math.ceil(Math.random() * (limitX - 2*radius));
     this.flip = 0;
     this.reposition = function(cntx){
         //cntx.clearRect(this.positionX , this.positionY , 2 * this.radius ,  2 * this.radius);
@@ -100,10 +99,10 @@ function box(positionX , positionY , dimension , velocityX , velocityY, limitX ,
     this.move = function(){
         if (paused) return;
 
-        if (this.positionX >  (this.limitX - (margin + dimension)) 
-        || this.positionY >  (this.limitY - (margin + dimension)) 
-        || this.positionX < margin 
-        || this.positionY < margin
+        if (this.positionX >  (this.limitX - (dimension)) 
+        || this.positionY >  (this.limitY - (dimension)) 
+        || this.positionX < 0
+        || this.positionY < 0
          ){
             this.onCollision();
         }
@@ -196,7 +195,7 @@ function renderBackGround(){
     //cntx.fillRect(0, 0, cnvswidth , cnvsheight);
     cntx.drawImage(bgImg,  0, 0);
     // cntx.fillStyle = "black";
-    //cntx.fillRect(margin, margin, cnvswidth - 2* margin, cnvsheight - 2* margin);
+    //cntx.fillRect(0, 0, cnvswidth , cnvsheight );
 }
 
 function draw(){
