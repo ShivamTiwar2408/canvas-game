@@ -3,8 +3,8 @@
   "description": "game",
   "version": "0.0.1",
   "scripts": {
-    "start": "harp server --port $PORT",
-    "build": "webpack"
+    "start": "npm run build && harp server --port $PORT",
+     "build": "webpack"
   },
   "dependencies": {
     "harp": "*"
