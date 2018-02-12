@@ -1,9 +1,9 @@
-var cnvsheight = 500;
-var cnvswidth = 600;
+var cnvsht = 500;
+var cnvswd = 600;
 var boxSide = 20;
-var velocity = 4;
-var obstacleSize = 25;
-var obstaclevelocity = 0.7;
+var vel = 4;
+var obtclSize = 25;
+var obstacleVel = 0.7;
 var foodSide = 15;
 var score = 0;
 var paused = false;
@@ -20,8 +20,8 @@ function empty(){
 }
 
 var g = document.getElementById("game");
-g.setAttribute("width" , cnvswidth);
-g.setAttribute("height" , cnvsheight);
+g.setAttribute("width" , cnvswd);
+g.setAttribute("height" , cnvsht);
 cntx = g.getContext("2d");
 var pauseImg = document.getElementById("pause");
 var gameoverImg = document.getElementById("gameover");
@@ -44,87 +44,87 @@ function getHighestScore(){
 highestEL.innerHTML = getHighestScore();
 
 var keyHandlers  = {
-    "ArrowRight" : function() { b.velocityX = velocity ; b.velocityY = 0 }, 
-    "ArrowLeft" : function() { b.velocityX = -(velocity) ; b.velocityY = 0 } ,
-    "ArrowUp" : function() { b.velocityX = 0 ; b.velocityY = -(velocity)  }  , 
-    "ArrowDown" : function() { b.velocityX = 0 ; b.velocityY = velocity }  ,
+    "ArrowRight" : function() { if (b) { b.velX = vel ; b.velY = 0 }}, 
+    "ArrowLeft" : function() { if (b) { b.velX = -(vel) ; b.velY = 0 } } ,
+    "ArrowUp" : function() { if (b) { b.velX = 0 ; b.velY = -(vel)  } } , 
+    "ArrowDown" : function() { if(b) { b.velX = 0 ; b.velY = vel } },
     "Space" : function() { paused = !paused} 
 } 
 
 function instantiate(){
-    obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
-    b = new box(cnvswidth/2 , cnvsheight/2 , boxSide , 0 , 0 , cnvswidth ,  cnvsheight);
-    f = new food( cnvswidth ,  cnvsheight , foodSide);
+    obstacles.push ( new obstacle(obtclSize ,obstacleVel, cnvswd ,  cnvsht));
+    b = new box(cnvswd/2 , cnvsht/2 , boxSide , 0 , 0 , cnvswd ,  cnvsht);
+    f = new food( cnvswd ,  cnvsht , foodSide);
     setScore(0);
 }
 
 instantiate();
 
 
-function food(limitX , limitY , dimension){
+function food(lmtX , lmtY , dimension){
     this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.dimension =  dimension;
-    this.positionY =  Math.ceil(Math.random() * (limitY - 2*dimension ));
-    this.positionX =  Math.ceil(Math.random() * (limitX - 2*dimension));
+    this.posY =  Math.ceil(Math.random() * (lmtY - 2*dimension ));
+    this.posX =  Math.ceil(Math.random() * (lmtX - 2*dimension));
     this.flip = 0;
     this.render = function (cntx) {
         this.flip = (this.flip + 1) % this.colors.length;
         cntx.fillStyle = this.colors[this.flip];
-        //cntx.arc(this.positionX , this.positionY , this.dimension , 0 , 2*Math.PI);
+        //cntx.arc(this.posX , this.posY , this.dimension , 0 , 2*Math.PI);
         //cntx.fill();
-        cntx.fillRect(this.positionX , this.positionY , this.dimension , this.dimension);
+        cntx.fillRect(this.posX , this.posY , this.dimension , this.dimension);
     }
 }
 
-function box(positionX , positionY , dimension , velocityX , velocityY, limitX , limitY){
-    this.positionX = positionX;
-    this.positionY =  positionY;
+function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
+    this.posX = posX;
+    this.posY =  posY;
     this.dimension =  dimension; 
-    this.velocityX = velocityX;
-    this.velocityY = velocityY;
-    this.limitX = limitX;
-    this.limitY = limitY;
+    this.velX = velX;
+    this.velY = velY;
+    this.lmtX = lmtX;
+    this.lmtY = lmtY;
     this.reset = function(){
-        this.positionY = limitY/2;
-        this.positionX = limitX/2;
-        this.velocityX = 0;
-        this.velocityY = 0;
+        this.posY = lmtY/2;
+        this.posX = lmtX/2;
+        this.velX = 0;
+        this.velY = 0;
         reduceLife();
     }
     this.onCollision = this.reset;
     this.move = function(){
         if (paused) return;
 
-        if (this.positionX >  (this.limitX - (dimension)) 
-        || this.positionY >  (this.limitY - (dimension)) 
-        || this.positionX < 0
-        || this.positionY < 0
+        if (this.posX >  (this.lmtX - (dimension)) 
+        || this.posY >  (this.lmtY - (dimension)) 
+        || this.posX < 0
+        || this.posY < 0
          ){
             this.onCollision();
         }
 
-        this.positionX = this.positionX + this.velocityX;
-        this.positionY = this.positionY + this.velocityY;
+        this.posX = this.posX + this.velX;
+        this.posY = this.posY + this.velY;
     }
     this.color = "white";
     this.render = function (cntx) {
         this.move();
         cntx.fillStyle= this.color ;
-        cntx.fillRect(this.positionX , this.positionY , this.dimension , this.dimension);
+        cntx.fillRect(this.posX , this.posY , this.dimension , this.dimension);
     }
 }
 
-function obstacle(dimension , velocity , limitX , limitY){
-    var positionY = limitY/5 +  Math.ceil(Math.random() * ( (4 * (limitY /5)) - dimension));
-    var positionX = limitX/5 +  Math.ceil(Math.random() * ( (4 * (limitX /5)) - dimension));  
-    var velocityX =  Math.random() >= 0.5 ? velocity : 0;
-    var velocityY =  velocityX === velocity ? 0 : velocity;
+function obstacle(dimension , vel , lmtX , lmtY){
+    var posY = lmtY/5 +  Math.ceil(Math.random() * ( (4 * (lmtY /5)) - dimension));
+    var posX = lmtX/5 +  Math.ceil(Math.random() * ( (4 * (lmtX /5)) - dimension));  
+    var velX =  Math.random() >= 0.5 ? vel : 0;
+    var velY =  velX === vel ? 0 : vel;
 
-    box.call(this , positionX , positionY , dimension , velocityX , velocityY, limitX , limitY);
+    box.call(this , posX , posY , dimension , velX , velY, lmtX , lmtY);
 
     this.onCollision = function(){
-        this.velocityX = -(this.velocityX);
-        this.velocityY = -(this.velocityY);
+        this.velX = -(this.velX);
+        this.velY = -(this.velY);
     }
     this.color = "#045FB4";
 }
@@ -132,46 +132,46 @@ function obstacle(dimension , velocity , limitX , limitY){
 
 function colision_detection (large , small){
 
-    if (small instanceof box && small.velocityX === 0 && small.velocityY === 0) return false;
+    if (small instanceof box && small.velX === 0 && small.velY === 0) return false;
 
-    let corner1_x = small.positionX;
-    let corner1_y = small.positionY;
+    let cnr1_x = small.posX;
+    let cnr1_y = small.posY;
     
     if (
-        corner1_x >= large.positionX 
-    && corner1_x <= (large.positionX + large.dimension)
-    && corner1_y >= large.positionY 
-    && corner1_y <= (large.positionY + large.dimension)
+        cnr1_x >= large.posX 
+    && cnr1_x <= (large.posX + large.dimension)
+    && cnr1_y >= large.posY 
+    && cnr1_y <= (large.posY + large.dimension)
     ) return true;
 
-    let corner2_x = small.positionX + small.dimension;
-    let corner2_y = small.positionY;
+    let cnr2_x = small.posX + small.dimension;
+    let cnr2_y = small.posY;
 
     if (
-        corner2_x >= large.positionX 
-    && corner2_x <= (large.positionX + large.dimension)
-    && corner2_y >= large.positionY 
-    && corner2_y <= (large.positionY + large.dimension)
-    ) return true;
-    
-    let corner3_x = small.positionX;
-    let corner3_y = small.positionY + small.dimension;
-
-    if (
-        corner3_x >= large.positionX 
-    && corner3_x <= (large.positionX + large.dimension)
-    && corner3_y >= large.positionY 
-    && corner3_y <= (large.positionY + large.dimension)
+        cnr2_x >= large.posX 
+    && cnr2_x <= (large.posX + large.dimension)
+    && cnr2_y >= large.posY 
+    && cnr2_y <= (large.posY + large.dimension)
     ) return true;
     
-    let corner4_x = small.positionX + small.dimension;
-    let corner4_y = small.positionY + small.dimension;
+    let cnr3_x = small.posX;
+    let cnr3_y = small.posY + small.dimension;
 
     if (
-        corner4_x >= large.positionX 
-    && corner4_x <= (large.positionX + large.dimension)
-    && corner4_y >= large.positionY 
-    && corner4_y <= (large.positionY + large.dimension)
+        cnr3_x >= large.posX 
+    && cnr3_x <= (large.posX + large.dimension)
+    && cnr3_y >= large.posY 
+    && cnr3_y <= (large.posY + large.dimension)
+    ) return true;
+    
+    let cnr4_x = small.posX + small.dimension;
+    let cnr4_y = small.posY + small.dimension;
+
+    if (
+        cnr4_x >= large.posX 
+    && cnr4_x <= (large.posX + large.dimension)
+    && cnr4_y >= large.posY 
+    && cnr4_y <= (large.posY + large.dimension)
     ) return true;
 
     return false;
@@ -182,7 +182,7 @@ function setScore(value){
 }
 
 function increaseDifficulty(){
-    obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
+    obstacles.push ( new obstacle(obtclSize ,obstacleVel, cnvswd ,  cnvsht));
 }
 
 function setGameOver(){
@@ -204,18 +204,18 @@ function reduceLife(){
 function writeGameOverMessage(){
     cntx.fillStyle = "white";
     cntx.font = "bold 80px Neue Swift";
-    cntx.fillText("Game",  cnvswidth/3 , cnvsheight/3);
-    cntx.fillText("Over",  cnvswidth/3 , cnvsheight/3 + 80);
+    cntx.fillText("Game",  cnvswd/3 , cnvsht/3);
+    cntx.fillText("Over",  cnvswd/3 , cnvsht/3 + 80);
     cntx.font = "bold 20px Arial";
-    cntx.fillText("Press F5 to play again",  cnvswidth/3 , cnvsheight/3 + 160);
+    cntx.fillText("Press F5 to play again",  cnvswd/3 , cnvsht/3 + 160);
 }
 
 function writePausedMessage(){
     cntx.fillStyle = "white";
     cntx.font = "bold 80px Neue Swift";
-    cntx.fillText("Paused",cnvswidth/4 , cnvsheight/2.5);
+    cntx.fillText("Paused",cnvswd/4 , cnvsht/2.5);
     cntx.font = "bold 20px Arial";
-    cntx.fillText("Press Space Bar to resume", cnvswidth/4 , cnvsheight/2.5 + 80);
+    cntx.fillText("Press Space Bar to resume", cnvswd/4 , cnvsht/2.5 + 80);
 }
 
 function renderBackGround(){
@@ -241,7 +241,7 @@ function draw(){
         }
     });
     if( b && f && colision_detection(b,f)){
-        f = new food( cnvswidth ,  cnvsheight , foodRadius);
+        f = new food( cnvswd ,  cnvsht , foodSide);
         score++;
         setScore(score);
         if (score && score % 5 == 0 ) {
