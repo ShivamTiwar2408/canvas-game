@@ -3,12 +3,17 @@
   "description": "game",
   "version": "0.0.1",
   "scripts": {
-    "start": "harp server --port $PORT"
+    "start": "harp server --port $PORT",
+    "build": "webpack"
   },
   "dependencies": {
     "harp": "*"
   },
   "engines": {
     "npm": "5.6.x"
+  },
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^1.1.8",
+    "webpack": "^3.11.0"
   }
 }
