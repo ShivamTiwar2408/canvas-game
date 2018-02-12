@@ -1,7 +1,7 @@
 var cnvsheight = 500;
 var cnvswidth = 600;
 var boxSide = 20;
-var velocity = 1;
+var velocity = 4;
 var obstacleSize = 25;
 var obstaclevelocity = 0.7;
 var foodRadius = 6;
@@ -132,6 +132,8 @@ function obstacle(dimension , velocity , limitX , limitY){
 
 function colision_detection (large , small){
 
+    if (small instanceof box && small.velocityX === 0 && small.velocityY === 0) return false;
+
     let corner1_x = small.positionX;
     let corner1_y = small.positionY;
     
@@ -180,7 +182,6 @@ function setScore(value){
 }
 
 function increaseDifficulty(){
-    velocity = 1.2 * velocity;
     obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
 }
 
@@ -207,7 +208,6 @@ function writeGameOverMessage(){
     cntx.fillText("Over",  cnvswidth/3 , cnvsheight/3 + 80);
     cntx.font = "bold 20px Arial";
     cntx.fillText("Press F5 to play again",  cnvswidth/3 , cnvsheight/3 + 160);
-    //cntx.drawImage(gameoverImg,  cnvswidth/10 , cnvsheight/10);
 }
 
 function writePausedMessage(){
@@ -216,15 +216,10 @@ function writePausedMessage(){
     cntx.fillText("Paused",cnvswidth/4 , cnvsheight/2.5);
     cntx.font = "bold 20px Arial";
     cntx.fillText("Press Space Bar to resume", cnvswidth/4 , cnvsheight/2.5 + 80);
-    //cntx.drawImage(pauseImg,  cnvswidth/10 , cnvsheight/3);
 }
 
 function renderBackGround(){
-    //cntx.fillStyle = "black";
-    //cntx.fillRect(0, 0, cnvswidth , cnvsheight);
     cntx.drawImage(bgImg,  0, 0);
-    // cntx.fillStyle = "black";
-    //cntx.fillRect(0, 0, cnvswidth , cnvsheight );
 }
 
 function draw(){
@@ -245,7 +240,7 @@ function draw(){
             b.reset();
         }
     });
-    if(colision_detection(b,f)){
+    if( b && f && colision_detection(b,f)){
         f = new food( cnvswidth ,  cnvsheight , foodRadius);
         score++;
         setScore(score);
@@ -260,7 +255,8 @@ function bindKeyEvents(){
       if (paused && e.code !== "Space") return;
        if (e.altKey == false && e.ctrlKey == false)
        {
-            keyHandlers[e.code]();
+           var f =  keyHandlers[e.code];
+           if (typeof f === "function") f();
        }
     }
 }
