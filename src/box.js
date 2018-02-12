@@ -4,7 +4,7 @@ var boxSide = 20;
 var velocity = 4;
 var obstacleSize = 25;
 var obstaclevelocity = 0.7;
-var foodRadius = 6;
+var foodSide = 15;
 var score = 0;
 var paused = false;
 var gameOver = false;
@@ -54,7 +54,7 @@ var keyHandlers  = {
 function instantiate(){
     obstacles.push ( new obstacle(obstacleSize ,obstaclevelocity, cnvswidth ,  cnvsheight));
     b = new box(cnvswidth/2 , cnvsheight/2 , boxSide , 0 , 0 , cnvswidth ,  cnvsheight);
-    f = new food( cnvswidth ,  cnvsheight , foodRadius);
+    f = new food( cnvswidth ,  cnvsheight , foodSide);
     setScore(0);
 }
 
@@ -72,7 +72,7 @@ function food(limitX , limitY , dimension){
         cntx.fillStyle = this.colors[this.flip];
         //cntx.arc(this.positionX , this.positionY , this.dimension , 0 , 2*Math.PI);
         //cntx.fill();
-        cntx.fillRect(this.positionX , this.positionY , 2 * this.dimension , 2 * this.dimension);
+        cntx.fillRect(this.positionX , this.positionY , this.dimension , this.dimension);
     }
 }
 
