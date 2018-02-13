@@ -3,7 +3,7 @@ var cnvswd = 600;
 var boxSide = 20;
 var vel = 4;
 var obtclSize = 25;
-var obstacleVel = 0.7;
+var obstacleVel = 1.5;
 var foodSide = 15;
 var score = 0;
 var paused = false;
@@ -62,7 +62,7 @@ instantiate();
 
 
 function food(lmtX , lmtY , dimension){
-    this.colors = ["red" , "black"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
+    this.colors = ["yellow"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
     this.dimension =  dimension;
     this.posY =  Math.ceil(Math.random() * (lmtY - 2*dimension ));
     this.posX =  Math.ceil(Math.random() * (lmtX - 2*dimension));
@@ -118,15 +118,30 @@ function obstacle(dimension , vel , lmtX , lmtY){
     var posY = lmtY/5 +  Math.ceil(Math.random() * ( (4 * (lmtY /5)) - dimension));
     var posX = lmtX/5 +  Math.ceil(Math.random() * ( (4 * (lmtX /5)) - dimension));  
     var velX =  Math.random() >= 0.5 ? vel : 0;
-    var velY =  velX === vel ? 0 : vel;
+    var velY =   Math.random() >= 0.5 ? vel : velX === vel ? 0 : vel;
 
     box.call(this , posX , posY , dimension , velX , velY, lmtX , lmtY);
+
+    this.move = function(){
+        if (paused) return;
+
+        if (this.posX >  (this.lmtX - (dimension)) 
+        || this.posX < 0)  this.velX = -(this.velX);
+         if (this.posY >  (this.lmtY - (dimension)) 
+        || this.posY < 0
+         ){
+            this.velY = -(this.velY);
+        }
+
+        this.posX = this.posX + this.velX;
+        this.posY = this.posY + this.velY;
+    }
 
     this.onCollision = function(){
         this.velX = -(this.velX);
         this.velY = -(this.velY);
     }
-    this.color = "#045FB4";
+    this.color = "red";
 }
 
 
