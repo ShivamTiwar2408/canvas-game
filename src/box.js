@@ -288,7 +288,7 @@ function draw(){
     obstacles.forEach(o => {
         o.render(cntx);
         if ( colision_detection(o,b) ){
-            b.reset();
+            b.kill();
         }
     });
     if( b && f && colision_detection(b,f)){
