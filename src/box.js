@@ -28,15 +28,27 @@ var scoreEL = document.getElementById("score");
 var highestEL = document.getElementById("highest");
 document.title = "PacMan";
 
+var secureStorage = {
+    setItem: function(key , value){
+     localStorage.setItem(CryptoJS.MD5(key).toString() , CryptoJS.AES.encrypt(value.toString() , "key").toString());
+    },
+    getItem: function(key){
+     let item = localStorage.getItem(CryptoJS.MD5(key).toString());
+     return item != null ? CryptoJS.AES.decrypt(item , "key").toString(CryptoJS.enc.Utf8) : null;        
+    }
+};
+
+
 var spriteSheet = new Image();
 spriteSheet.src = "./dist/Images/googlespritesheet2.png";
 
 
 function setHighestScore(value){
-    localStorage.setItem("highestScore", value);
+    //secureStorage.setItem('highestScore', data);
+    secureStorage.setItem("highestScore", value);
 }
 function getHighestScore(){
-    var item = localStorage.getItem("highestScore");
+    var item = secureStorage.getItem("highestScore");
     if (item == null) return 0;
     else return item;
 }
