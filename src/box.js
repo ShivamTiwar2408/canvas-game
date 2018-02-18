@@ -29,7 +29,7 @@ var highestEL = document.getElementById("highest");
 document.title = "PacMan";
 
 var spriteSheet = new Image();
-spriteSheet.src = "./src/googlespritesheet2.png";
+spriteSheet.src = "./dist/Images/googlespritesheet2.png";
 
 
 function setHighestScore(value){
