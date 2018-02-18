@@ -81,30 +81,28 @@ function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
     this.lmtX = lmtX;
     this.lmtY = lmtY;
     this.reset = function(){
+        this.posY = lmtY/2;
+        this.posX = lmtX/2;
+        reduceLife();
+        this.motionDirection = "Up";
+        disableMotion = false;    
+    }
+    this.kill= function(){
+        this.i = -1;
         this.motionDirection = "Dead";
         this.velX = 0;
         this.velY= 0;
-        var self = this;
         disableMotion = true;
-        setTimeout(() => {
-            self.posY = lmtY/2;
-            self.posX = lmtX/2;
-            self.velX = 0;
-            self.velY = 0;
-            reduceLife();
-            self.motionDirection = "Up";
-            disableMotion = false;    
-        }, 750);  // very fragile code here
     }
     this.motionDirection = "Up";
-    this.onCollision = this.reset;
-    this.i  =0;
+    this.onCollision = this.kill;
+    this.i =0;
     this.motionGuide = {
         "Up" : [{ x: 14 , y : 55 } ,{ x: 34 , y : 55 } ,{ x: 54 , y : 15 }  ] ,
         "Left" : [{ x: 14 , y : 15 } ,{ x: 34 , y : 15 } ,{ x: 54 , y : 15 }  ] ,
         "Right" : [{ x: 14 , y : 35 } ,{ x: 34 , y : 35 } ,{ x: 54 , y : 15 }  ] ,
         "Down" :[{ x: 14 , y : 75 } ,{ x: 34 , y : 75 } ,{ x: 54 , y : 15 }  ] ,
-        "Dead" : [ {x : 14 , y : 255} , {x : 34 , y : 255} ,{x : 54 , y : 255} ,{x : 74 , y : 255},{x : 94 , y : 255} , {x : 114 , y : 255} ,{x : 134 , y : 255} ,{x : 154 , y : 255},{x : 174 , y : 255} , {x : 194 , y : 255} ,{x : 214 , y : 255}]
+        "Dead" : [ {x : 14 , y : 255} , {x : 34 , y : 255} ,{x : 54 , y : 255} ,{x : 74 , y : 255},{x : 94 , y : 255} , {x : 114 , y : 255} ,{x : 134 , y : 255} ,{x : 154 , y : 255},{x : 174 , y : 255} , {x : 194 , y : 255} ,{x : 214 , y : 255}, {x : -1 , y : -1}]
     };
     this.moveRight =  function (){
         this.velX = vel ; this.velY = 0; 
@@ -115,8 +113,7 @@ function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
         this.motionDirection = "Left";
     }
     this.moveUp =  function (){
-        this.velX = 0; 
-        this.velY = -(vel);
+        this.velX = 0; this.velY = -(vel);
         this.motionDirection = "Up";
     }
     this.moveDown =  function (){
@@ -142,6 +139,9 @@ function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
         let cons = motionArray.length * 5;
         this.i = (this.i + 1) % cons;
         let m = motionArray[Math.floor(this.i / 5)];
+        if (m.x === -1 && m.y === -1){
+            this.reset();
+        }
         cntx.drawImage(spriteSheet , m.x , m.y , 13 , 14 , this.posX , this.posY, this.dimension , this.dimension);   
     }
 }
