@@ -1,5 +1,5 @@
-var cnvsht = 500;
-var cnvswd = 600;
+var cnvsht = 3*(window.innerHeight / 5);
+var cnvswd = window.innerWidth/2;
 var boxSide = 22;
 var vel = 4;
 var obtclSize = 25;
