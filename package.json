@@ -1,10 +1,10 @@
 {
-  "name": "canvas",
+  "name": "PacMan",
   "description": "game",
   "version": "0.0.1",
   "scripts": {
     "start": "harp server --port $PORT",
-     "build": "webpack"
+    "build": "webpack"
   },
   "dependencies": {
     "harp": "*"

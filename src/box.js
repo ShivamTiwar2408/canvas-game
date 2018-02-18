@@ -1,10 +1,10 @@
 var cnvsht = 500;
 var cnvswd = 600;
-var boxSide = 20;
+var boxSide = 22;
 var vel = 4;
 var obtclSize = 25;
 var obstacleVel = 1.5;
-var foodSide = 15;
+var foodSide = 16;
 var score = 0;
 var paused = false;
 var gameOver = false;
@@ -12,7 +12,7 @@ var fps = 60;
 var damage = 0;
 var numberOfLifes = 4;
 var  b , obstacles = [] , f;
-
+var disableMotion = false;
 function empty(){
     obstacles = [];
     b = undefined;
@@ -23,14 +23,14 @@ var g = document.getElementById("game");
 g.setAttribute("width" , cnvswd);
 g.setAttribute("height" , cnvsht);
 cntx = g.getContext("2d");
-var pauseImg = document.getElementById("pause");
-var gameoverImg = document.getElementById("gameover");
-var bgImg = document.getElementById("background");
-var oImg = document.getElementById("obstacle");
 var rl = document.getElementById("remainingLife");
 var scoreEL = document.getElementById("score");
 var highestEL = document.getElementById("highest");
-document.title = "Box";
+document.title = "PacMan";
+
+var spriteSheet = new Image();
+spriteSheet.src = "./src/googlespritesheet2.png";
+
 
 function setHighestScore(value){
     localStorage.setItem("highestScore", value);
@@ -44,10 +44,10 @@ function getHighestScore(){
 highestEL.innerHTML = getHighestScore();
 
 var keyHandlers  = {
-    "ArrowRight" : function() { if (b) { b.velX = vel ; b.velY = 0 }}, 
-    "ArrowLeft" : function() { if (b) { b.velX = -(vel) ; b.velY = 0 } } ,
-    "ArrowUp" : function() { if (b) { b.velX = 0 ; b.velY = -(vel)  } } , 
-    "ArrowDown" : function() { if(b) { b.velX = 0 ; b.velY = vel } },
+    "ArrowRight" : function() { if (b) {b.moveRight(); }}, 
+    "ArrowLeft" : function() { if (b) { b.moveLeft(); }} ,
+    "ArrowUp" : function() { if (b) { b.moveUp();} } , 
+    "ArrowDown" : function() { if(b) {b.moveDown(); } },
     "Space" : function() { paused = !paused} 
 } 
 
@@ -62,17 +62,13 @@ instantiate();
 
 
 function food(lmtX , lmtY , dimension){
-    this.colors = ["yellow"]; //["red" , "blue" , "green" , "#0FD1F3" , "red" ,  "#786C97" , "red" ,  "#D3D910" , "red" ,  "#04FEF3"];
+    this.animation = [{x : 183 , y : 177 } , {x : 183 , y :197 } , {x : 183 , y : 217 }, {x : 183 , y : 237}];
+    this.image = this.animation[Math.ceil(Math.random() *  (this.animation.length - 1))];
     this.dimension =  dimension;
     this.posY =  Math.ceil(Math.random() * (lmtY - 2*dimension ));
     this.posX =  Math.ceil(Math.random() * (lmtX - 2*dimension));
-    this.flip = 0;
     this.render = function (cntx) {
-        this.flip = (this.flip + 1) % this.colors.length;
-        cntx.fillStyle = this.colors[this.flip];
-        //cntx.arc(this.posX , this.posY , this.dimension , 0 , 2*Math.PI);
-        //cntx.fill();
-        cntx.fillRect(this.posX , this.posY , this.dimension , this.dimension);
+        cntx.drawImage(spriteSheet, this.image.x , this.image.y , 13 , 12 , this.posX , this.posY , this.dimension , this.dimension);   
     }
 }
 
@@ -85,32 +81,68 @@ function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
     this.lmtX = lmtX;
     this.lmtY = lmtY;
     this.reset = function(){
-        this.posY = lmtY/2;
-        this.posX = lmtX/2;
+        this.motionDirection = "Dead";
         this.velX = 0;
-        this.velY = 0;
-        reduceLife();
+        this.velY= 0;
+        var self = this;
+        disableMotion = true;
+        setTimeout(() => {
+            self.posY = lmtY/2;
+            self.posX = lmtX/2;
+            self.velX = 0;
+            self.velY = 0;
+            reduceLife();
+            self.motionDirection = "Up";
+            disableMotion = false;    
+        }, 700);  // very fragile code here
     }
+    this.motionDirection = "Up";
     this.onCollision = this.reset;
+    this.i  =0;
+    this.motionGuide = {
+        "Up" : [{ x: 14 , y : 55 } ,{ x: 34 , y : 55 } ,{ x: 54 , y : 15 }  ] ,
+        "Left" : [{ x: 14 , y : 15 } ,{ x: 34 , y : 15 } ,{ x: 54 , y : 15 }  ] ,
+        "Right" : [{ x: 14 , y : 35 } ,{ x: 34 , y : 35 } ,{ x: 54 , y : 15 }  ] ,
+        "Down" :[{ x: 14 , y : 75 } ,{ x: 34 , y : 75 } ,{ x: 54 , y : 15 }  ] ,
+        "Dead" : [ {x : 14 , y : 255} , {x : 34 , y : 255} ,{x : 54 , y : 255} ,{x : 74 , y : 255},{x : 94 , y : 255} , {x : 114 , y : 255} ,{x : 134 , y : 255} ,{x : 154 , y : 255},{x : 174 , y : 255} , {x : 194 , y : 255} ,{x : 214 , y : 255}]
+    };
+    this.moveRight =  function (){
+        this.velX = vel ; this.velY = 0; 
+        this.motionDirection = "Right";
+    }
+    this.moveLeft =  function (){
+        this.velX = -(vel) ; this.velY = 0; 
+        this.motionDirection = "Left";
+    }
+    this.moveUp =  function (){
+        this.velX = 0; 
+        this.velY = -(vel);
+        this.motionDirection = "Up";
+    }
+    this.moveDown =  function (){
+        this.velX = 0 ; this.velY = vel;
+        this.motionDirection = "Down";
+    }
     this.move = function(){
         if (paused) return;
-
-        if (this.posX >  (this.lmtX - (dimension)) 
+        if ( ( this.posX >  (this.lmtX - (dimension)) 
         || this.posY >  (this.lmtY - (dimension)) 
         || this.posX < 0
         || this.posY < 0
-         ){
+         ) && ( this.velX !== 0 || this.velY !== 0)){
             this.onCollision();
         }
-
         this.posX = this.posX + this.velX;
         this.posY = this.posY + this.velY;
     }
-    this.color = "white";
+
     this.render = function (cntx) {
         this.move();
-        cntx.fillStyle= this.color ;
-        cntx.fillRect(this.posX , this.posY , this.dimension , this.dimension);
+        let motionArray = this.motionGuide[this.motionDirection];
+        let cons = motionArray.length * 5;
+        this.i = (this.i + 1) % cons;
+        let m = motionArray[Math.floor(this.i / 5)];
+        cntx.drawImage(spriteSheet , m.x , m.y , 13 , 14 , this.posX , this.posY, this.dimension , this.dimension);   
     }
 }
 
@@ -119,9 +151,9 @@ function obstacle(dimension , vel , lmtX , lmtY){
     var posX = lmtX/5 +  Math.ceil(Math.random() * ( (4 * (lmtX /5)) - dimension));  
     var velX =  Math.random() >= 0.5 ? vel : 0;
     var velY =   Math.random() >= 0.5 ? vel : velX === vel ? 0 : vel;
-
+    this.animation = [{ x : 54 , y : 95 }, { x : 54 , y : 115 } ,{ x : 54, y : 135 }, { x : 54 , y : 155 }];
+    this.image = this.animation[Math.ceil(Math.random() *  (this.animation.length - 1))];
     box.call(this , posX , posY , dimension , velX , velY, lmtX , lmtY);
-
     this.move = function(){
         if (paused) return;
 
@@ -132,7 +164,6 @@ function obstacle(dimension , vel , lmtX , lmtY){
          ){
             this.velY = -(this.velY);
         }
-
         this.posX = this.posX + this.velX;
         this.posY = this.posY + this.velY;
     }
@@ -141,7 +172,11 @@ function obstacle(dimension , vel , lmtX , lmtY){
         this.velX = -(this.velX);
         this.velY = -(this.velY);
     }
-    this.color = "red";
+    this.render = function (cntx) {
+        this.move();
+        cntx.fillStyle= this.color ;
+        cntx.drawImage(spriteSheet, this.image.x  , this.image.y, 15 , 15 , this.posX , this.posY , this.dimension , this.dimension);   
+    }
 }
 
 
@@ -234,7 +269,8 @@ function writePausedMessage(){
 }
 
 function renderBackGround(){
-    cntx.drawImage(bgImg,  0, 0);
+    cntx.fillStyle = "black";
+    cntx.fillRect(0, 0, cnvswd , cnvsht);
 }
 
 function draw(){
@@ -267,7 +303,7 @@ function draw(){
 	
 function bindKeyEvents(){
     document.onkeydown = function (e){
-      if (paused && e.code !== "Space") return;
+      if ((paused || disableMotion) && e.code !== "Space") return;
        if (e.altKey == false && e.ctrlKey == false)
        {
            var f =  keyHandlers[e.code];
