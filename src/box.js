@@ -94,7 +94,7 @@ function box(posX , posY , dimension , velX , velY, lmtX , lmtY){
             reduceLife();
             self.motionDirection = "Up";
             disableMotion = false;    
-        }, 700);  // very fragile code here
+        }, 750);  // very fragile code here
     }
     this.motionDirection = "Up";
     this.onCollision = this.reset;
