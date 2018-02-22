@@ -281,7 +281,7 @@ function writePausedMessage(){
 }
 
 function renderBackGround(){
-    cntx.fillStyle = "black";
+    cntx.fillStyle = "#5b81b5"; //"#99d9ea"; //"black";
     cntx.fillRect(0, 0, cnvswd , cnvsht);
 }
 
