@@ -311,6 +311,7 @@ function draw(){
             increaseDifficulty();
         }
     }
+    window.requestAnimationFrame(draw);
 }
 	
 function bindKeyEvents(){
@@ -326,7 +327,5 @@ function bindKeyEvents(){
 
 window.onload =  function(){
     bindKeyEvents();
-    setInterval(function(){
-       draw();
-    } , 1000/fps)
+    draw();
 }
