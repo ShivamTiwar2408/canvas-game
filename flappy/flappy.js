@@ -19,6 +19,7 @@ var addObstacleEvent = new CustomEvent('addObstacle');
 var gameOver = false;
 var blackbody = false;
 var score = 0;
+document.title = "Flappy";
 
 function bird(initialX , initialY , dimension){
     this.velY = 0;
