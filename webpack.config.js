@@ -3,15 +3,20 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/box.js',
+  entry: {
+	'pacman' : './pacman/box.js',  
+	'flappy' : './flappy/flappy.js'
+  }, 
   plugins: [
    new CopyWebpackPlugin([
-            {from:'src/Images',to:'Images'} 
+            {from:'pacman/Images',to:'Images/pacman'},
+			{from:'flappy/Images',to:'Images/flappy'}, 		
+			{from:'images',to:'Images'} 					
         ]), 
     new UglifyJsPlugin()
   ],
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist')
   }
 };

@@ -40,7 +40,7 @@ var secureStorage = {
 
 
 var spriteSheet = new Image();
-spriteSheet.src = "./dist/Images/googlespritesheet2.png";
+spriteSheet.src = "../dist/Images/pacman/googlespritesheet2.png";
 
 
 function setHighestScore(value){
