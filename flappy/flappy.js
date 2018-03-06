@@ -1,5 +1,11 @@
 var cnvsht = window.innerHeight/1.2;
 var cnvswd = window.innerWidth/3.5;
+
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    cnvsht = window.innerHeight;
+    cnvswd = window.innerWidth;
+}
+
 var g = document.getElementById("game");
 g.setAttribute("width" , cnvswd);
 g.setAttribute("height" , cnvsht);
